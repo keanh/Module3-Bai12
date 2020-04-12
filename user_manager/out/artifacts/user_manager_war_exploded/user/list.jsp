@@ -15,7 +15,8 @@
 <center>
     <h1>User Management</h1>
     <h2>
-        <a href="/users?action=create">Add New User</a>
+        <a href="/users?action=create">Add New User</a><br>
+        <a href="/users?action=select">Select User By Country</a>
     </h2>
 </center>
 <div align="center">
@@ -31,7 +32,7 @@
         <c:forEach var="user" items="${listUser}">
             <tr>
                 <td><c:out value="${user.id}"/></td>
-                <td><c:out value="${user.name}"/></td>
+                <td><a href="/users?action=view&id=${user.id}"><c:out value="${user.name}"/></a></td>
                 <td><c:out value="${user.email}"/></td>
                 <td><c:out value="${user.country}"/></td>
                 <td>
