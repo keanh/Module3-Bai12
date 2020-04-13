@@ -212,6 +212,58 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
+    public List<User> selectAllUsersStore() {
+        List<User> list = new ArrayList<>();
+        String query = "{Call get_all_users()}";
+        try(Connection connection = getConnection();
+            CallableStatement callableStatement = connection.prepareCall(query)){
+            ResultSet resultSet = callableStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                String country = resultSet.getString("country");
+                list.add(new User(id, name, email, country));
+            }
+        }catch (SQLException e){
+            printSQLException(e);
+        }
+        return list;
+    }
+
+    @Override
+    public boolean updateUserStore(User user) {
+        boolean rowUpdated = false;
+        String query = "{Call update_user(?,?,?,?)}";
+        try (Connection connection = getConnection();
+            CallableStatement callableStatement = connection.prepareCall(query)) {
+            callableStatement.setString(1, user.getName());
+            callableStatement.setString(2, user.getEmail());
+            callableStatement.setString(3, user.getCountry());
+            callableStatement.setInt(4, user.getId());
+
+            rowUpdated = callableStatement.executeUpdate() > 0;
+        }catch (SQLException e){
+            printSQLException(e);
+        }
+        return rowUpdated;
+    }
+
+    @Override
+    public boolean deleteUserStore(int id) {
+        boolean rowDelete = false;
+        String query = "{Call delete_user(?)}";
+        try(Connection connection = getConnection();
+            CallableStatement callableStatement = connection.prepareCall(query)){
+            callableStatement.setInt(1,id);
+            rowDelete = callableStatement.executeUpdate()>0;
+        }catch (SQLException e){
+            printSQLException(e);
+        }
+        return rowDelete;
+    }
+
+    @Override
     public void addUserTransaction(User user, int[] permisions) {
 
         Connection conn = null;
@@ -344,9 +396,9 @@ public class UserDAO implements IUserDAO {
 
              PreparedStatement psUpdate = conn.prepareStatement(SQL_UPDATE)) {
 
-            statement.execute(SQL_TABLE_DROP);
+            //statement.execute(SQL_TABLE_DROP);
 
-            statement.execute(SQL_TABLE_CREATE);
+            //statement.execute(SQL_TABLE_CREATE);
 
             // start transaction block
 
@@ -383,7 +435,6 @@ public class UserDAO implements IUserDAO {
             // org.postgresql.util.PSQLException: No value specified for parameter 1.
 
             psUpdate.setBigDecimal(2, new BigDecimal(999.99));
-
 
 
             //psUpdate.setBigDecimal(1, new BigDecimal(999.99));
