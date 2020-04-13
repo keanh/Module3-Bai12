@@ -66,6 +66,15 @@ public class UserServlet extends HttpServlet {
                 case "select":
                     showSelectUserByCountryForm(request,response);
                     break;
+                case "permision":
+                    addUserPermision(request,response);
+                    break;
+                case "test-without-tran":
+                    testWithoutTran(request,response);
+                    break;
+                case "test-use-tran":
+                    testUseTran(request,response);
+                    break;
                 default:
                     listUser(request, response);
                     break;
@@ -177,5 +186,19 @@ public class UserServlet extends HttpServlet {
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void addUserPermision(HttpServletRequest request, HttpServletResponse response) {
+        User user = new User("kien", "kienhoang@gmail.com", "vn");
+        int[] permision = {1, 2, 4};
+        userDAO.addUserTransaction(user, permision);
+    }
+
+    private void testWithoutTran(HttpServletRequest request, HttpServletResponse response) {
+        userDAO.insertUpdateWithoutTransaction();
+    }
+
+    private void testUseTran(HttpServletRequest request, HttpServletResponse response) {
+        userDAO.insertUpdateUseTransaction();
     }
 }
